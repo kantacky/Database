@@ -37,11 +37,11 @@ services:
       - ./certbot/data/www:/var/www/certbot
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
 
-  pgadmin4:
+  pgadmin:
     image: dpage/pgadmin4:latest
     restart: always
     volumes:
-      - ./pgadmin4/data:/var/lib/pgadmin
+      - ./pgadmin/data:/var/lib/pgadmin
     env_file:
       - ./.env
     depends_on:
