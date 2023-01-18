@@ -3,18 +3,11 @@ services:
   adminer:
     image: adminer:latest
     restart: always
-    user: 1000:1000
-    volumes:
-      - /etc/passwd:/etc/passwd:ro
-      - /etc/group:/etc/group:ro
 
   certbot:
     image: certbot/certbot
     restart: always
-    user: 1000:1000
     volumes:
-      - /etc/passwd:/etc/passwd:ro
-      - /etc/group:/etc/group:ro
       - ./certbot/data/conf:/etc/letsencrypt
       - ./certbot/data/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
@@ -27,14 +20,11 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - /etc/passwd:/etc/passwd:ro
-      - /etc/group:/etc/group:ro
       - ./mysql/data:/var/lib/mysql
 
   nginx:
     image: nginx:alpine
     restart: always
-    user: 1000:1000
     depends_on:
       - adminer
       - pgadmin4
@@ -42,8 +32,6 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - /etc/passwd:/etc/passwd:ro
-      - /etc/group:/etc/group:ro
       - ./nginx/conf:/etc/nginx/conf.d
       - ./certbot/data/conf:/etc/letsencrypt
       - ./certbot/data/www:/var/www/certbot
@@ -52,7 +40,6 @@ services:
   pgadmin4:
     image: dpage/pgadmin4
     restart: always
-    user: 5050:5050
     volumes:
       - ./pgadmin4/data:/var/lib/pgadmin
     env_file:
@@ -63,10 +50,7 @@ services:
   postgres:
     image: postgres:alpine
     restart: always
-    user: 1000:1000
     volumes:
-      - /etc/passwd:/etc/passwd:ro
-      - /etc/group:/etc/group:ro
       - ./postgres/data:/var/lib/postgresql/data
       # - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
     env_file:
