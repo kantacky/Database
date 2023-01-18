@@ -52,10 +52,8 @@ services:
   pgadmin4:
     image: dpage/pgadmin4
     restart: always
-    user: 1000:1000
+    user: 5050:5050
     volumes:
-      - /etc/passwd:/etc/passwd:ro
-      - /etc/group:/etc/group:ro
       - ./pgadmin4/data:/var/lib/pgadmin
     env_file:
       - ./.env
