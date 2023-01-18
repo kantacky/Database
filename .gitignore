@@ -1,0 +1,6 @@
+.DS_Store
+.env
+backup/
+data/
+sql/
+servers.json

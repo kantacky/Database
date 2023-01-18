@@ -1,0 +1,57 @@
+version: "3"
+services:
+  adminer:
+    image: adminer:latest
+    restart: always
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/data//conf:/etc/letsencrypt
+      - ./certbot/data/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+
+  nginx:
+    image: nginx:alpine
+    depends_on:
+      - adminer
+      - pgadmin4
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./certbot/data//conf:/etc/letsencrypt
+      - ./certbot/data/www:/var/www/certbot
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    restart: always
+    volumes:
+      - ./pgadmin4/data:/var/lib/pgadmin
+    env_file:
+      - ./.env
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:alpine
+    restart: always
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      # - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file:
+      - ./.env
+    ports:
+      - 5432:5432
